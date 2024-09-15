@@ -1,0 +1,110 @@
+@apiUrl = http://localhost:3000/api/v1
+
+### List Collections
+GET {{apiUrl}}/collections
+
+### Create Collections
+POST {{apiUrl}}/collections
+content-type: application/json
+
+{
+    "collection_names": [
+        "myNewCollection1",
+        "myNewCollection2"
+    ]
+}
+
+### Delete Collections
+DELETE {{apiUrl}}/collections
+content-type: application/json
+
+{
+    "collection_names": [
+        "myNewCollection1",
+        "room_chat:MYRoom"
+    ]
+}
+
+### List Collection Variables
+GET {{apiUrl}}/collections/myNewCollection1/variables
+
+### Create Collection Variables
+POST {{apiUrl}}/collections/myNewCollection1/variables
+content-type: application/json
+
+{
+    "variables": [
+        {
+            "name": "var1",
+            "vtype": 1,
+            "buffer_size": 3
+        },
+        {
+            "name": "var2",
+            "vtype": 3,
+            "buffer_size": 3
+        },
+        {
+            "name": "var3",
+            "vtype": 1,
+            "buffer_size": 3
+        },
+        {
+            "name": "var4",
+            "vtype": 3,
+            "buffer_size": 3
+        }
+    ]
+}
+
+### Delete Collection Variables
+DELETE {{apiUrl}}/collections/myNewCollection1/variables
+content-type: application/json
+
+{
+    "variable_names": [
+        "var1",
+        "var3"
+    ]
+}
+
+### Set Collection Variables values
+POST {{apiUrl}}/collections/myNewCollection1/variables/set
+content-type: application/json
+
+{
+    "variable_names": [
+        "var2",
+        "var4"
+    ],
+    "variable_values": [
+        -852,
+        456
+    ]
+    // "timestamp": 1726431966077,
+    // "epoch": 1
+}
+
+### Get Collection Variables values
+POST {{apiUrl}}/collections/myNewCollection1/variables/get
+content-type: application/json
+
+{
+    "variable_names": [
+        "var2",
+        "var4"
+    ],
+    "epoch": 2
+}
+
+### Subscribe Collection Variables values
+POST {{apiUrl}}/collections/myNewCollection1/variables/get
+content-type: application/json
+
+{
+    "variable_names": [
+        "var2",
+        "var4"
+    ],
+    "epoch": 2
+}

@@ -102,3 +102,8 @@ GET {{apiUrl}}/collections/myNewCollection1/variables/subscribe
 // variable_names: ["var2","var4"]
 // events: [{"event":0}]
 // interval_ping: 5000
+
+# curl --request GET \
+#   --url 'http://localhost:3000/api/v1/collections/myNewCollection1/variables/subscribe?variable_names=%5B%22var2%22%2C%22var4%22%5D&events=%5B%7B%22event%22%3A1%7D%5D&interval_ping=6000' \
+#   --header 'Accept: text/event-stream' \
+#   --header 'User-Agent: insomnia/10.0.0'

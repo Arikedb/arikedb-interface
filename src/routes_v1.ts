@@ -21,7 +21,7 @@ router.get('/collections', (req: Request, res: Response) => {
     });
   })
   .then(() => {
-    req.logger?.info('Collections listed');
+    req.logger?.debug('Collections listed');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -43,7 +43,7 @@ router.post('/collections', (req: Request, res: Response) => {
     });
   })
   .then(() => {
-    req.logger?.info('Collections created');
+    req.logger?.debug('Collections created');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -65,7 +65,7 @@ router.delete('/collections', (req: Request, res: Response) => {
     });
   })
   .then(() => {
-    req.logger?.info('Collections deleted');
+    req.logger?.debug('Collections deleted');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -90,7 +90,7 @@ router.get('/collections/:collection/variables', (req: Request, res: Response) =
     });
   })
   .then(() => {
-    req.logger?.info('Variables listed');
+    req.logger?.debug('Variables listed');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -121,7 +121,7 @@ router.post('/collections/:collection/variables', (req: Request, res: Response) 
     });
   })
   .then(() => {
-    req.logger?.info('Variables created');
+    req.logger?.debug('Variables created');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -146,7 +146,7 @@ router.delete('/collections/:collection/variables', (req: Request, res: Response
     });
   })
   .then(() => {
-    req.logger?.info('Variables deleted');
+    req.logger?.debug('Variables deleted');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -174,7 +174,7 @@ router.post('/collections/:collection/variables/set', (req: Request, res: Respon
     });
   })
   .then(() => {
-    req.logger?.info('Variables set');
+    req.logger?.debug('Variables set');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -203,7 +203,7 @@ router.post('/collections/:collection/variables/get', (req: Request, res: Respon
     });
   })
   .then(() => {
-    req.logger?.info('Variables getted');
+    req.logger?.debug('Variables getted');
   }).catch((err) => {
     res.status(500)
     .json({
@@ -215,19 +215,28 @@ router.post('/collections/:collection/variables/get', (req: Request, res: Respon
   });
 });
 
-router.post('/collections/:collection/variables/subscribe', (req: Request, res: Response) => {
+router.get('/collections/:collection/variables/subscribe', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
 
   const observable = req.db_cli.subscribeVariables(
     req.params.collection,
-    req.body.variable_names,
-    req.body.events.map((event: any) => { return event as Event })
+    JSON.parse(String(req.query.variable_names || "[]")),
+    JSON.parse(String(req.query.events || "[]")),
   );
+
+  const interval_ping = req.query.interval_ping ? Number(req.query.interval_ping) : 5000;
+
+  const intervalId = setInterval(() => {
+      res.write(`data: ${JSON.stringify({ message: 'ping' })}\n\n`);
+  }, interval_ping);
+  req.logger?.debug('Variables subscribed');
 
   const subscription = observable.subscribe({
     next: (data_point) => {
+      req.logger?.debug('Streaming variable');
       res.write(`data: ${JSON.stringify(data_point)}\n\n`);
     },
     error: (err) => {
@@ -238,11 +247,15 @@ router.post('/collections/:collection/variables/subscribe', (req: Request, res: 
       req.logger?.error(err);
     },
     complete: () => {
+      req.logger?.debug('Variables unsubscribed');
+      clearInterval(intervalId);
       res.end();
     }
   });
 
   req.on('close', () => {
+      req.logger?.debug('Variables unsubscribed');
+      clearInterval(intervalId);
       subscription.unsubscribe();
       res.end();
   });

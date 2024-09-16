@@ -2,7 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import routes_v1 from './routes_v1';
 import winston from 'winston';
-import { ArikedbCore, Variable } from "@arikedb/core";
+import { ArikedbCore } from "@arikedb/core";
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ const logFormat = winston.format.combine(
     winston.format.simple(),
     winston.format.colorize(),
 );
-  
+
 // Create the logger instance
 const logger = winston.createLogger({
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug', // Use lower log level in dev

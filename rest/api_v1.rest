@@ -20,8 +20,7 @@ content-type: application/json
 
 {
     "collection_names": [
-        "myNewCollection1",
-        "room_chat:MYRoom"
+        "myNewCollection2"
     ]
 }
 
@@ -78,8 +77,8 @@ content-type: application/json
         "var4"
     ],
     "variable_values": [
-        -852,
-        456
+        -12,
+        111
     ]
     // "timestamp": 1726431966077,
     // "epoch": 1
@@ -94,17 +93,12 @@ content-type: application/json
         "var2",
         "var4"
     ],
-    "epoch": 2
+    "epoch": 0
 }
 
 ### Subscribe Collection Variables values
-POST {{apiUrl}}/collections/myNewCollection1/variables/get
-content-type: application/json
-
-{
-    "variable_names": [
-        "var2",
-        "var4"
-    ],
-    "epoch": 2
-}
+GET {{apiUrl}}/collections/myNewCollection1/variables/subscribe
+// USE Query parameters like these
+// variable_names: ["var2","var4"]
+// events: [{"event":0}]
+// interval_ping: 5000
